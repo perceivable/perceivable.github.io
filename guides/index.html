@@ -60,9 +60,9 @@
         border: 1px solid var(--rule); border-radius: 10px;
         background: var(--bg-soft); padding: 20px 22px; margin: 0 0 14px;
       }
-      .guide h2 { font-size: 1.15rem; margin: 0 0 6px; }
-      .guide h2 a { text-decoration: none; }
-      .guide h2 a:hover { text-decoration: underline; }
+      .guide h3 { font-size: 1.15rem; margin: 0 0 6px; }
+      .guide h3 a { text-decoration: none; }
+      .guide h3 a:hover { text-decoration: underline; }
       .guide p { margin: 0 0 8px; color: var(--muted); font-size: 0.98rem; }
       .guide .tag { font-size: 0.84rem; color: var(--muted); }
       footer {
@@ -94,11 +94,27 @@
           is in here too — those are usually the useful parts.
         </p>
 
+        <h2>Tools</h2>
         <ul class="guides">
           <li class="guide">
-            <h2>
+            <h3>
+              <a href="/tools/accessibility-statement/">Accessibility statement generator</a>
+            </h3>
+            <p>
+              Fill in a form, get a statement following the EU model structure.
+              Runs entirely in your browser — nothing you type is sent anywhere,
+              and there is nothing to sign up for.
+            </p>
+            <p class="tag">Free · No sign-up · Client-side only</p>
+          </li>
+        </ul>
+
+        <h2>Reading</h2>
+        <ul class="guides">
+          <li class="guide">
+            <h3>
               <a href="/guides/eaa-compliance/">The European Accessibility Act: what it requires, who is exempt, and which WCAG version actually counts</a>
-            </h2>
+            </h3>
             <p>
               In force since June 2025. What it covers, how narrow the
               microenterprise exemption really is, and why the legal reference
@@ -108,9 +124,9 @@
             <p class="tag">EAA · EN 301 549 · Last reviewed 24 September 2026</p>
           </li>
           <li class="guide">
-            <h2>
+            <h3>
               <a href="/guides/wcag-target-size/">WCAG 2.5.8 Target Size, including the exceptions everyone skips</a>
-            </h2>
+            </h3>
             <p>
               What the criterion actually requires, all five exceptions with
               worked examples, and why the Spacing exception decides whether

@@ -1,0 +1,455 @@
+<!doctype html>
+<!-- A free, client-side accessibility statement generator.
+     No server, no data sent anywhere — the whole thing runs in the page, which
+     is also what lets us promise that what you type here stays here.
+     It follows the structure of the EU model statement (Web Accessibility
+     Directive / EN 301 549), which is what most enforcement bodies expect. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Accessibility statement generator — free, no sign-up</title>
+    <meta
+      name="description"
+      content="Generate an accessibility statement following the EU model structure. Runs entirely in your browser — nothing you type is sent anywhere. Free, no sign-up."
+    />
+    <link rel="canonical" href="https://perceivable.github.io/tools/accessibility-statement/" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --bg-soft: #f5f7fa;
+        --text: #16181c;
+        --muted: #4b5158;
+        --accent: #12489e;
+        --accent-ink: #ffffff;
+        --rule: #dde1e6;
+        --flag: #8d6708;
+        --flag-bg: #fdf5e2;
+        --bad: #b3261e;
+        --bad-bg: #fdecea;
+        --ok: #1b6b3a;
+        --ok-bg: #e8f5ec;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14161a;
+          --bg-soft: #1c1f25;
+          --text: #edeff2;
+          --muted: #a9b1bb;
+          --accent: #8ab4ff;
+          --accent-ink: #10131a;
+          --rule: #2b3038;
+          --flag: #ffd166;
+          --flag-bg: #332b14;
+          --bad: #ff8a80;
+          --bad-bg: #38201f;
+          --ok: #7ee2a8;
+          --ok-bg: #16301f;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--bg); color: var(--text);
+        font: 17px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .skip {
+        position: absolute; left: -9999px;
+        display: inline-block; min-height: 24px; padding: 8px 14px;
+        background: var(--bg); border: 2px solid var(--accent); border-radius: 6px;
+      }
+      .skip:focus { left: 12px; top: 12px; z-index: 10; }
+      .wrap { max-width: 48rem; margin: 0 auto; padding: 0 20px; }
+      header { border-bottom: 1px solid var(--rule); }
+      .bar {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 16px 0; flex-wrap: wrap; font-size: 16px;
+      }
+      .brand { font-weight: 700; }
+      nav a { display: inline-block; min-height: 24px; padding: 4px 8px; color: var(--accent); }
+      h1 { font-size: clamp(1.8rem, 4.5vw, 2.3rem); margin: 44px 0 10px; letter-spacing: -0.025em; }
+      h2 { font-size: 1.25rem; margin: 40px 0 10px; }
+      p, li { margin: 0 0 14px; }
+      a { color: var(--accent); }
+      a:focus-visible, .skip:focus-visible, button:focus-visible,
+      input:focus-visible, select:focus-visible, textarea:focus-visible {
+        outline: 3px solid var(--accent); outline-offset: 2px;
+      }
+      .standfirst { font-size: 1.08rem; color: var(--muted); margin-bottom: 26px; }
+
+      .note {
+        background: var(--flag-bg); border-left: 4px solid var(--flag);
+        border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 22px 0; font-size: 1rem;
+      }
+      .note p:last-child { margin-bottom: 0; }
+      .warn {
+        background: var(--bad-bg); border-left: 4px solid var(--bad);
+        border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 22px 0; font-size: 1rem;
+      }
+      .warn p:last-child { margin-bottom: 0; }
+
+      fieldset {
+        border: 1px solid var(--rule); border-radius: 10px;
+        padding: 18px 20px 6px; margin: 0 0 18px; background: var(--bg-soft);
+      }
+      legend { font-weight: 650; padding: 0 6px; }
+      .field { margin-bottom: 16px; }
+      label { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+      .hint { display: block; font-weight: 400; color: var(--muted); font-size: 0.88rem; margin-bottom: 5px; }
+      input[type="text"], input[type="email"], input[type="url"], input[type="date"],
+      select, textarea {
+        width: 100%; font: inherit; font-size: 0.97rem;
+        padding: 9px 11px; min-height: 40px;
+        color: var(--text); background: var(--bg);
+        border: 1px solid var(--muted); border-radius: 7px;
+      }
+      textarea { min-height: 100px; resize: vertical; }
+      .radio-row { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 10px; }
+      .radio-row input { margin-top: 5px; width: 20px; height: 20px; flex: 0 0 auto; }
+      .radio-row label { font-weight: 500; margin: 0; }
+      .radio-row .hint { margin: 2px 0 0; }
+
+      .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 28px; }
+      button {
+        font: inherit; font-weight: 600; font-size: 0.97rem;
+        min-height: 44px; padding: 10px 20px;
+        border-radius: 8px; border: 1px solid transparent; cursor: pointer;
+      }
+      .btn-primary { background: var(--accent); color: var(--accent-ink); }
+      .btn-primary:hover { filter: brightness(1.08); }
+      .btn-ghost { background: transparent; border-color: var(--muted); color: var(--text); }
+      .btn-ghost:hover { background: var(--bg-soft); }
+
+      #output {
+        width: 100%; min-height: 380px; font-size: 0.9rem; line-height: 1.6;
+        font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+        white-space: pre-wrap;
+      }
+      .status { min-height: 1.6em; color: var(--ok); font-weight: 600; font-size: 0.95rem; }
+      footer {
+        border-top: 1px solid var(--rule); margin-top: 52px;
+        padding: 24px 0 48px; color: var(--muted); font-size: 0.94rem;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to main content</a>
+
+    <header>
+      <div class="wrap bar">
+        <span class="brand">A11yScope</span>
+        <nav aria-label="Primary">
+          <a href="/">Home</a>
+          <a href="/guides/">Guides</a>
+          <a href="/support/">Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <main id="content">
+        <h1>Accessibility statement generator</h1>
+        <p class="standfirst">
+          Fill in the form, get a statement following the EU model structure.
+          Everything runs in your browser — nothing you type is sent anywhere,
+          and there is nothing to sign up for.
+        </p>
+
+        <div class="warn">
+          <p>
+            <strong>A statement is a description, not a certificate.</strong>
+            Claiming conformance you do not have is worse than admitting
+            problems: it is a written record that can be held against you.
+            Under-promise here. Listing known issues honestly is normal, expected,
+            and protects you.
+          </p>
+        </div>
+
+        <form id="form">
+          <fieldset>
+            <legend>Who and what</legend>
+
+            <div class="field">
+              <label for="org">Organisation name</label>
+              <span class="hint" id="org-hint">As it should appear in a legal document.</span>
+              <input type="text" id="org" name="org" aria-describedby="org-hint"
+                     autocomplete="organization" placeholder="Northbrook Dental Ltd" />
+            </div>
+
+            <div class="field">
+              <label for="site">Website or service this covers</label>
+              <span class="hint" id="site-hint">One statement per site or app.</span>
+              <input type="url" id="site" name="site" aria-describedby="site-hint"
+                     autocomplete="url" placeholder="https://example.com" />
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Conformance</legend>
+
+            <div class="field">
+              <label for="standard">Standard you are measuring against</label>
+              <select id="standard" name="standard">
+                <option value="WCAG 2.2 level AA">WCAG 2.2 level AA</option>
+                <option value="WCAG 2.1 level AA" selected>WCAG 2.1 level AA</option>
+                <option value="EN 301 549">EN 301 549</option>
+                <option value="Section 508">Section 508 (US)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <fieldset style="background:none;border:0;padding:0;margin:0">
+                <legend style="font-weight:600;font-size:0.95rem;padding:0;margin-bottom:6px">Conformance status</legend>
+
+                <div class="radio-row">
+                  <input type="radio" id="s-partial" name="status" value="partially" checked />
+                  <div>
+                    <label for="s-partial">Partially conformant</label>
+                    <span class="hint">Most of it conforms; some things do not. This is the honest answer for almost everyone.</span>
+                  </div>
+                </div>
+
+                <div class="radio-row">
+                  <input type="radio" id="s-full" name="status" value="fully" />
+                  <div>
+                    <label for="s-full">Fully conformant</label>
+                    <span class="hint">Only if a full manual audit says so. An automated scan cannot establish this.</span>
+                  </div>
+                </div>
+
+                <div class="radio-row">
+                  <input type="radio" id="s-non" name="status" value="non" />
+                  <div>
+                    <label for="s-non">Not conformant</label>
+                    <span class="hint">Work has not started or is at an early stage. Saying so with a plan is respected.</span>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="field">
+              <label for="issues">Known problems</label>
+              <span class="hint" id="issues-hint">One per line. Say what is wrong and, if you know, when it will be fixed.</span>
+              <textarea id="issues" name="issues" aria-describedby="issues-hint"
+placeholder="Some older PDFs are not tagged and cannot be read by a screen reader. We are replacing them by March 2027.
+The booking calendar cannot be operated by keyboard alone. A fix is in development."></textarea>
+            </div>
+
+            <div class="field">
+              <label for="method">How this was assessed</label>
+              <select id="method" name="method">
+                <option value="a self-assessment carried out by the organisation" selected>Self-assessment</option>
+                <option value="an external audit carried out by a third party">External audit</option>
+                <option value="a self-assessment supported by automated testing tools">Self-assessment with automated tools</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Contact and dates</legend>
+
+            <div class="field">
+              <label for="email">Contact email for accessibility problems</label>
+              <span class="hint" id="email-hint">Must be monitored. An unanswered address is worse than none.</span>
+              <input type="email" id="email" name="email" aria-describedby="email-hint"
+                     autocomplete="email" placeholder="access@example.com" />
+            </div>
+
+            <div class="field">
+              <label for="days">Response time you commit to, in working days</label>
+              <input type="text" id="days" name="days" inputmode="numeric" value="5" />
+            </div>
+
+            <div class="field">
+              <label for="prepared">Date this statement was prepared</label>
+              <input type="date" id="prepared" name="prepared" />
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button type="submit" class="btn-primary" id="generate">Generate statement</button>
+            <button type="button" class="btn-ghost" id="copy">Copy to clipboard</button>
+          </div>
+        </form>
+
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+
+        <h2 id="output-heading">Your statement</h2>
+        <label for="output" class="hint">
+          Markdown. Edit it freely — this is a starting point, not a finished document.
+        </label>
+        <textarea id="output" aria-labelledby="output-heading" spellcheck="false"></textarea>
+
+        <div class="note">
+          <p>
+            <strong>Before you publish it:</strong> link it from your footer,
+            make sure the contact address works, and set a reminder to review it.
+            Several jurisdictions expect an annual review, and a statement dated
+            three years ago reads worse than no statement at all.
+          </p>
+        </div>
+
+        <h2>What a statement cannot do</h2>
+        <p>
+          It does not make an inaccessible site accessible, and publishing one
+          does not discharge an obligation. What it does is describe the current
+          position honestly, give people a way to report barriers, and show that
+          somebody is paying attention — which is what enforcement bodies
+          actually look for first.
+        </p>
+        <p>
+          If you want to know what is wrong before writing the "known problems"
+          section, <a href="/">A11yScope</a> runs the automatable WCAG 2.2
+          checks on any page in one click. It finds roughly a third of the
+          problems — the rest still needs a person.
+        </p>
+        <p>
+          <a href="/guides/eaa-compliance/">More on what the European
+          Accessibility Act requires</a>.
+        </p>
+      </main>
+
+      <footer>
+        <p>
+          Built by Perceivable, who make <a href="/">A11yScope</a>.
+          This generator is a template, not legal advice.
+          <a href="mailto:perceivablehq@gmail.com">perceivablehq@gmail.com</a>
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      (() => {
+        const form = document.getElementById("form");
+        const output = document.getElementById("output");
+        const status = document.getElementById("status");
+        const prepared = document.getElementById("prepared");
+
+        // Default the date to today, in the user's own timezone rather than UTC.
+        const today = new Date();
+        const iso = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 10);
+        prepared.value = iso;
+
+        const readable = (value) => {
+          if (!value) return "";
+          const [y, m, d] = value.split("-").map(Number);
+          return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-GB", {
+            day: "numeric", month: "long", year: "numeric", timeZone: "UTC",
+          });
+        };
+
+        function build(data) {
+          const org = data.org.trim() || "[Organisation name]";
+          const site = data.site.trim() || "[website address]";
+          const standard = data.standard;
+          const email = data.email.trim() || "[contact email]";
+          const days = data.days.trim() || "5";
+          const date = readable(data.prepared) || "[date]";
+
+          const issues = data.issues
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean);
+
+          const lines = [];
+          lines.push(`# Accessibility statement for ${site}`);
+          lines.push("");
+          lines.push(
+            `${org} is committed to making ${site} accessible to as many people ` +
+              "as possible, including people with disabilities."
+          );
+          lines.push("");
+          lines.push("## Compliance status");
+          lines.push("");
+
+          if (data.status === "fully") {
+            lines.push(
+              `${site} is fully conformant with ${standard}. "Fully conformant" ` +
+                "means that the content fully conforms to the accessibility standard " +
+                "without any exceptions."
+            );
+          } else if (data.status === "partially") {
+            lines.push(
+              `${site} is partially conformant with ${standard}. "Partially ` +
+                'conformant" means that some parts of the content do not fully ' +
+                "conform to the accessibility standard."
+            );
+          } else {
+            lines.push(
+              `${site} is not conformant with ${standard}. The issues listed below ` +
+                "are known, and work to address them is planned."
+            );
+          }
+
+          lines.push("");
+          lines.push("## Non-accessible content");
+          lines.push("");
+          if (issues.length) {
+            lines.push("The content listed below is not accessible for the following reasons:");
+            lines.push("");
+            for (const issue of issues) lines.push(`- ${issue}`);
+          } else if (data.status === "fully") {
+            lines.push("We are not aware of any non-accessible content.");
+          } else {
+            lines.push(
+              "[List the parts that do not conform, why, and when you expect to " +
+                "fix them. Being specific here is what makes a statement credible.]"
+            );
+          }
+
+          lines.push("");
+          lines.push("## Feedback and contact information");
+          lines.push("");
+          lines.push(
+            `If you find an accessibility problem, or need content in a different ` +
+              `format, please email ${email}. We aim to respond within ${days} ` +
+              "working days."
+          );
+          lines.push("");
+          lines.push(
+            "Please tell us the page address and what the problem was — that is " +
+              "usually enough for us to reproduce it."
+          );
+          lines.push("");
+          lines.push("## Preparation of this statement");
+          lines.push("");
+          lines.push(`This statement was prepared on ${date}.`);
+          lines.push("");
+          lines.push(`It was based on ${data.method}.`);
+          lines.push("");
+          lines.push(
+            "[If you are in the EU or UK, add the enforcement procedure for your " +
+              "jurisdiction here — the body people can escalate to if they are not " +
+              "satisfied with your response.]"
+          );
+          lines.push("");
+          return lines.join("\n");
+        }
+
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const data = Object.fromEntries(new FormData(form).entries());
+          output.value = build(data);
+          status.textContent = "Statement generated below.";
+        });
+
+        document.getElementById("copy").addEventListener("click", async () => {
+          if (!output.value) {
+            status.textContent = "Generate a statement first.";
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(output.value);
+            status.textContent = "Copied to clipboard.";
+          } catch {
+            output.select();
+            status.textContent = "Select all and copy — your browser blocked automatic copying.";
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
