@@ -1,0 +1,272 @@
+<!doctype html>
+<!-- Landing page for the Chrome Web Store listing's homepage field.
+     Single file, no external requests, and it must pass A11yScope itself. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A11yScope — find WCAG issues on any page</title>
+    <meta
+      name="description"
+      content="A Chrome extension that checks any page against WCAG 2.2 AA. Contrast, labels, headings, ARIA and target size — in one click, with nothing sent anywhere."
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --bg-soft: #f5f7fa;
+        --text: #16181c;        /* 16.6:1 on white */
+        --muted: #4b5158;       /* 8.3:1 on white  */
+        --accent: #12489e;      /* 7.4:1 on white  */
+        --accent-ink: #ffffff;
+        --rule: #dde1e6;
+        --flag: #8d6708;
+        --flag-bg: #fdf5e2;
+        --radius: 10px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14161a;
+          --bg-soft: #1c1f25;
+          --text: #edeff2;
+          --muted: #a9b1bb;
+          --accent: #8ab4ff;
+          --accent-ink: #10131a;
+          --rule: #2b3038;
+          --flag: #ffd166;
+          --flag-bg: #332b14;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .skip {
+        position: absolute;
+        left: -9999px;
+        display: inline-block;
+        min-height: 24px;
+        padding: 8px 14px;
+        background: var(--bg);
+        border: 2px solid var(--accent);
+        border-radius: 6px;
+      }
+      .skip:focus { left: 12px; top: 12px; z-index: 10; }
+
+      .wrap { max-width: 48rem; margin: 0 auto; padding: 0 20px; }
+
+      header { border-bottom: 1px solid var(--rule); }
+      .bar {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 16px 0; flex-wrap: wrap;
+      }
+      .brand { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+      nav a {
+        display: inline-block;
+        min-height: 24px;
+        padding: 4px 8px;
+        color: var(--accent);
+      }
+
+      .hero { padding: 56px 0 8px; }
+      h1 {
+        font-size: clamp(1.9rem, 5vw, 2.6rem);
+        line-height: 1.18;
+        letter-spacing: -0.025em;
+        margin: 0 0 14px;
+      }
+      .lede { font-size: 1.1rem; color: var(--muted); margin: 0 0 26px; max-width: 34rem; }
+
+      .cta {
+        display: inline-block;
+        min-height: 24px;
+        background: var(--accent);
+        color: var(--accent-ink);
+        padding: 12px 22px;
+        border-radius: var(--radius);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .cta:hover { filter: brightness(1.08); }
+      .cta-note { color: var(--muted); font-size: 0.9rem; margin: 12px 0 0; }
+
+      h2 { font-size: 1.3rem; margin: 48px 0 12px; letter-spacing: -0.01em; }
+      h3 { font-size: 1rem; margin: 0 0 6px; }
+      p { margin: 0 0 14px; }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+        gap: 14px;
+        margin: 0 0 8px;
+        padding: 0;
+        list-style: none;
+      }
+      .card {
+        background: var(--bg-soft);
+        border: 1px solid var(--rule);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+      }
+      .card p { color: var(--muted); margin: 0; font-size: 0.95rem; }
+
+      .flag {
+        background: var(--flag-bg);
+        border-left: 4px solid var(--flag);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        padding: 16px 20px;
+        margin: 28px 0;
+      }
+      .flag p:last-child { margin-bottom: 0; }
+
+      dl { margin: 0; }
+      dt { font-weight: 650; margin-top: 16px; }
+      dd { margin: 4px 0 0; color: var(--muted); }
+
+      a { color: var(--accent); }
+      a:focus-visible, .skip:focus-visible, .cta:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      footer {
+        border-top: 1px solid var(--rule);
+        margin-top: 56px;
+        padding: 24px 0 48px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to main content</a>
+
+    <header>
+      <div class="wrap bar">
+        <span class="brand">A11yScope</span>
+        <nav aria-label="Primary">
+          <a href="#checks">What it checks</a>
+          <a href="#limits">Limits</a>
+          <a href="/privacy/">Privacy</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <main id="content">
+        <section class="hero">
+          <h1>Find the accessibility problems on a page in one click.</h1>
+          <p class="lede">
+            A11yScope checks whatever page you are looking at against the
+            automatable parts of WCAG 2.2 Level AA, shows each finding with the
+            success criterion it comes from, and highlights the element on the
+            page.
+          </p>
+          <a class="cta" href="#checks">See what it checks</a>
+          <p class="cta-note">
+            Free. No account, no sign-in, and nothing is uploaded.
+          </p>
+        </section>
+
+        <h2 id="checks">31 checks, grouped by what breaks</h2>
+        <ul class="grid">
+          <li class="card">
+            <h3>Text alternatives</h3>
+            <p>
+              Images with no alt text, form controls with only a placeholder,
+              icon buttons and links with no accessible name, untitled frames.
+            </p>
+          </li>
+          <li class="card">
+            <h3>Colour contrast</h3>
+            <p>
+              Text below 4.5:1, with the measured ratio and both colours.
+              Translucent backgrounds are composited through every ancestor
+              layer rather than guessed at.
+            </p>
+          </li>
+          <li class="card">
+            <h3>Structure</h3>
+            <p>
+              Missing page language or title, skipped heading levels, absent
+              landmarks, data tables without header cells, malformed lists.
+            </p>
+          </li>
+          <li class="card">
+            <h3>Keyboard, pointer and ARIA</h3>
+            <p>
+              Zoom disabled, tab order scrambled by positive tabindex, focusable
+              elements hidden from screen readers, targets below the 24×24
+              minimum added in WCAG 2.2, misspelled ARIA roles.
+            </p>
+          </li>
+        </ul>
+
+        <h2 id="limits">What it will not tell you</h2>
+        <div class="flag">
+          <p>
+            <strong>Automated testing finds roughly a third of accessibility
+            barriers.</strong> A clean scan is a good sign. It is not a
+            compliance certificate, and no tool can confirm conformance with the
+            European Accessibility Act on your behalf.
+          </p>
+          <p>
+            Whether your alt text is accurate, whether the page makes sense read
+            aloud, whether a keyboard user can actually finish a task — those
+            need a person.
+          </p>
+        </div>
+        <p>
+          So findings that cannot be decided automatically are marked
+          <strong>needs review</strong> rather than passed or failed. Each one is
+          a real question, not a false alarm to dismiss. Contrast over a
+          background image, a control hidden off-screen until focused, a video
+          whose captions live in the player — the tool says it does not know,
+          because saying nothing would hide the question and guessing would be
+          worse.
+        </p>
+
+        <h2>Details</h2>
+        <dl>
+          <dt>Where does my data go?</dt>
+          <dd>
+            Nowhere. Scans run inside your browser and results exist only in the
+            side panel until you close it. See the
+            <a href="/privacy/">privacy policy</a>.
+          </dd>
+
+          <dt>What permissions does it need?</dt>
+          <dd>
+            <code>activeTab</code>, which grants access only to the tab you press
+            Scan on, only at that moment. It has no standing access to your
+            browsing.
+          </dd>
+
+          <dt>Which standard does it test against?</dt>
+          <dd>
+            WCAG 2.2 Level AA, including the newer 2.5.8 target size criterion —
+            with its spacing and in-sentence exceptions implemented, so
+            correctly built pages are not flagged.
+          </dd>
+
+          <dt>Does it work on pages behind a login?</dt>
+          <dd>
+            Yes. It reads the page as rendered in your browser, so anything you
+            can see, it can check.
+          </dd>
+        </dl>
+      </main>
+
+      <footer>
+        <p>
+          A11yScope is made by Perceivable.
+          <a href="mailto:perceivablehq@gmail.com">perceivablehq@gmail.com</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
