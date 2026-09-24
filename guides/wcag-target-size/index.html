@@ -1,0 +1,450 @@
+<!doctype html>
+<!-- Reference article. The point of it is the Spacing exception, which almost
+     every explanation of 2.5.8 skips and which is the difference between a
+     scanner that works and one that reports 72 failures on gov.uk. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WCAG 2.5.8 Target Size (Minimum), including the exceptions everyone skips</title>
+    <meta
+      name="description"
+      content="What WCAG 2.2 Success Criterion 2.5.8 actually requires, all five exceptions with worked examples, and why the Spacing exception is the one that decides whether your site passes."
+    />
+    <link rel="canonical" href="https://perceivable.github.io/guides/wcag-target-size/" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --bg-soft: #f5f7fa;
+        --text: #16181c;
+        --muted: #4b5158;
+        --accent: #12489e;
+        --rule: #dde1e6;
+        --ok: #1b6b3a;
+        --ok-bg: #e8f5ec;
+        --bad: #b3261e;
+        --bad-bg: #fdecea;
+        --flag: #8d6708;
+        --flag-bg: #fdf5e2;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14161a;
+          --bg-soft: #1c1f25;
+          --text: #edeff2;
+          --muted: #a9b1bb;
+          --accent: #8ab4ff;
+          --rule: #2b3038;
+          --ok: #7ee2a8;
+          --ok-bg: #16301f;
+          --bad: #ff8a80;
+          --bad-bg: #38201f;
+          --flag: #ffd166;
+          --flag-bg: #332b14;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 17px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .skip {
+        position: absolute; left: -9999px;
+        display: inline-block; min-height: 24px;
+        padding: 8px 14px; background: var(--bg);
+        border: 2px solid var(--accent); border-radius: 6px;
+      }
+      .skip:focus { left: 12px; top: 12px; z-index: 10; }
+      .wrap { max-width: 44rem; margin: 0 auto; padding: 0 20px; }
+      header { border-bottom: 1px solid var(--rule); }
+      .bar {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 16px 0; flex-wrap: wrap; font-size: 16px;
+      }
+      .brand { font-weight: 700; }
+      nav a { display: inline-block; min-height: 24px; padding: 4px 8px; color: var(--accent); }
+      h1 {
+        font-size: clamp(1.8rem, 4.5vw, 2.4rem);
+        line-height: 1.2; letter-spacing: -0.025em; margin: 44px 0 12px;
+      }
+      h2 { font-size: 1.35rem; margin: 46px 0 12px; letter-spacing: -0.01em; }
+      h3 { font-size: 1.08rem; margin: 30px 0 6px; }
+      p, li { margin: 0 0 14px; }
+      ul, ol { padding-left: 1.35rem; }
+      a { color: var(--accent); }
+      a:focus-visible, .skip:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+      .standfirst { font-size: 1.12rem; color: var(--muted); margin-bottom: 8px; }
+      .meta { color: var(--muted); font-size: 0.92rem; margin-bottom: 32px; }
+      blockquote {
+        margin: 20px 0; padding: 14px 20px;
+        background: var(--bg-soft); border-left: 4px solid var(--accent);
+        border-radius: 0 8px 8px 0; font-size: 1rem;
+      }
+      blockquote p:last-child { margin-bottom: 0; }
+      .note {
+        background: var(--flag-bg); border-left: 4px solid var(--flag);
+        border-radius: 0 8px 8px 0; padding: 14px 20px; margin: 24px 0; font-size: 1rem;
+      }
+      .note p:last-child { margin-bottom: 0; }
+      .verdict { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 10px; }
+      .badge {
+        flex: 0 0 auto; font-size: 0.8rem; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px; margin-top: 4px;
+      }
+      .badge--pass { background: var(--ok-bg); color: var(--ok); }
+      .badge--fail { background: var(--bad-bg); color: var(--bad); }
+      table { border-collapse: collapse; width: 100%; font-size: 0.96rem; margin: 0 0 18px; }
+      th, td { border: 1px solid var(--rule); padding: 8px 12px; text-align: left; vertical-align: top; }
+      th { background: var(--bg-soft); font-weight: 650; }
+      caption {
+        text-align: left; color: var(--muted);
+        font-size: 0.92rem; padding-bottom: 8px;
+      }
+      code {
+        font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+        font-size: 0.9em; background: var(--bg-soft); padding: 1px 5px; border-radius: 4px;
+      }
+      pre {
+        background: var(--bg-soft); border: 1px solid var(--rule); border-radius: 8px;
+        padding: 14px 16px; overflow-x: auto; font-size: 0.88rem; line-height: 1.55;
+      }
+      pre code { background: none; padding: 0; }
+      figure { margin: 24px 0; }
+      figcaption { color: var(--muted); font-size: 0.92rem; margin-top: 8px; }
+      .diagram { width: 100%; height: auto; background: var(--bg-soft); border: 1px solid var(--rule); border-radius: 8px; }
+      footer {
+        border-top: 1px solid var(--rule); margin-top: 56px;
+        padding: 24px 0 48px; color: var(--muted); font-size: 0.94rem;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to main content</a>
+
+    <header>
+      <div class="wrap bar">
+        <span class="brand">A11yScope</span>
+        <nav aria-label="Primary">
+          <a href="/">Home</a>
+          <a href="/guides/">Guides</a>
+          <a href="/support/">Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <main id="content">
+        <h1>WCAG 2.5.8 Target Size, including the exceptions everyone skips</h1>
+        <p class="standfirst">
+          The criterion is four lines long. The exceptions are why your site
+          probably already passes, and why most scanners say it does not.
+        </p>
+        <p class="meta">Last reviewed 24 September 2026 · WCAG 2.2, Level AA</p>
+
+        <h2>What it requires</h2>
+        <blockquote>
+          <p>
+            <strong>2.5.8 Target Size (Minimum) — Level AA.</strong>
+            The size of the target for pointer inputs is at least 24 by 24 CSS
+            pixels, except when: Spacing, Equivalent, Inline, User agent
+            control, Essential.
+          </p>
+        </blockquote>
+        <p>
+          A <em>target</em> is the region that accepts a pointer action — a
+          button, a link, a checkbox, anything you can click or tap. The
+          measurement is in CSS pixels, so it is unaffected by device pixel
+          ratio, and it applies to both dimensions: 40 by 20 fails.
+        </p>
+        <p>
+          The reason is not aesthetic. People with tremor, people using a
+          touchscreen on a moving train, people with limited fine motor control
+          and anyone with large fingers all miss small targets, and missing a
+          target is not merely annoying — it activates whatever is next to it.
+        </p>
+
+        <h2>The five exceptions</h2>
+        <p>
+          These are normative. A target that meets any one of them conforms,
+          regardless of its size. Most explanations of 2.5.8 mention that the
+          exceptions exist and move on, which is roughly where the trouble
+          starts.
+        </p>
+
+        <h3>1. Spacing — the one that matters</h3>
+        <blockquote>
+          <p>
+            Undersized targets (those less than 24 by 24 CSS pixels) are
+            positioned so that if a 24 CSS pixel diameter circle is centered on
+            the bounding box of each, the circles do not intersect another
+            target or the circle for another undersized target.
+          </p>
+        </blockquote>
+        <p>
+          Read that carefully, because it is doing more work than it looks. The
+          test is not "is the target big enough". It is <strong>"is there room
+          to miss"</strong>. A 20×20 icon button floating alone in a toolbar
+          margin passes. Three 20×20 buttons packed two pixels apart fail — not
+          because any one of them is small, but because missing one hits
+          another.
+        </p>
+
+        <figure>
+          <svg class="diagram" viewBox="0 0 640 220" role="img"
+               aria-label="Two diagrams. On the left, two small buttons far apart: their 24-pixel circles do not touch, so they pass. On the right, two small buttons close together: their circles overlap, so they fail.">
+            <rect x="0" y="0" width="640" height="220" fill="none" />
+            <!-- pass -->
+            <text x="40" y="34" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#1b6b3a">Passes — circles do not intersect</text>
+            <circle cx="90" cy="120" r="48" fill="#1b6b3a" fill-opacity="0.10" stroke="#1b6b3a" stroke-dasharray="5 4" />
+            <rect x="70" y="100" width="40" height="40" rx="6" fill="#12489e" />
+            <circle cx="230" cy="120" r="48" fill="#1b6b3a" fill-opacity="0.10" stroke="#1b6b3a" stroke-dasharray="5 4" />
+            <rect x="210" y="100" width="40" height="40" rx="6" fill="#12489e" />
+            <line x1="138" y1="185" x2="182" y2="185" stroke="#4b5158" stroke-width="2" />
+            <text x="128" y="205" font-family="system-ui, sans-serif" font-size="13" fill="#4b5158">gap</text>
+            <!-- fail -->
+            <text x="380" y="34" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#b3261e">Fails — circles overlap</text>
+            <circle cx="450" cy="120" r="48" fill="#b3261e" fill-opacity="0.12" stroke="#b3261e" stroke-dasharray="5 4" />
+            <rect x="430" y="100" width="40" height="40" rx="6" fill="#12489e" />
+            <circle cx="520" cy="120" r="48" fill="#b3261e" fill-opacity="0.12" stroke="#b3261e" stroke-dasharray="5 4" />
+            <rect x="500" y="100" width="40" height="40" rx="6" fill="#12489e" />
+          </svg>
+          <figcaption>
+            The circle is 24 CSS pixels in diameter — 12 pixels of radius —
+            centred on each undersized target's bounding box. Scaled up here for
+            legibility.
+          </figcaption>
+        </figure>
+
+        <p>
+          In practice this means the fix is usually spacing, not size. Adding
+          margin is cheaper than redesigning a control, and it addresses the
+          actual harm: hitting the wrong thing.
+        </p>
+
+        <h3>2. Equivalent</h3>
+        <blockquote>
+          <p>
+            The function can be achieved through a different control on the same
+            page that meets this criterion.
+          </p>
+        </blockquote>
+        <p>
+          A tiny "×" in the corner of a dialog conforms if there is also a
+          full-size <em>Cancel</em> button doing the same job. The alternative
+          has to be on the same page and genuinely equivalent — a link to a
+          different page that eventually offers the same function does not
+          count.
+        </p>
+
+        <h3>3. Inline</h3>
+        <blockquote>
+          <p>
+            The target is in a sentence or its size is otherwise constrained by
+            the line-height of non-target text.
+          </p>
+        </blockquote>
+        <p>
+          A link inside a paragraph is exempt. Its height is set by the line
+          height of the prose around it, and the author cannot enlarge it
+          without breaking the text.
+        </p>
+        <p>
+          The limit of this exception is <strong>"non-target text"</strong>. A
+          link sitting alone in a list item is not in a sentence, and nothing
+          constrains its height except a choice the author made. Stacked
+          19-pixel card titles are the common case here, and they are not
+          exempt on the inline clause — though they very often are exempt on
+          spacing, which is why they usually still pass.
+        </p>
+
+        <h3>4. User agent control</h3>
+        <blockquote>
+          <p>
+            The size of the target is determined by the user agent and is not
+            modified by the author.
+          </p>
+        </blockquote>
+        <p>
+          A default, unstyled <code>&lt;input type="checkbox"&gt;</code> is
+          whatever the browser makes it. Style it — even a little — and you own
+          the size again.
+        </p>
+
+        <h3>5. Essential</h3>
+        <blockquote>
+          <p>
+            A particular presentation of the target is essential or is legally
+            required for the information being conveyed.
+          </p>
+        </blockquote>
+        <p>
+          The narrowest of the five. A pin on a map has to sit where the place
+          is; a word in a document being annotated has to stay where the word
+          is. "Our design system says so" is not essential.
+        </p>
+
+        <h2>Worked examples</h2>
+
+        <div class="verdict">
+          <span class="badge badge--pass">Passes</span>
+          <p>
+            A 20×20 icon button in a header, with 16 pixels of margin on every
+            side. Undersized, but the 24px circles reach nothing.
+            <strong>Spacing.</strong>
+          </p>
+        </div>
+
+        <div class="verdict">
+          <span class="badge badge--fail">Fails</span>
+          <p>
+            A toolbar of three 16×16 formatting buttons with a 2-pixel gap.
+            The circles overlap heavily, and missing bold gets you italic.
+          </p>
+        </div>
+
+        <div class="verdict">
+          <span class="badge badge--pass">Passes</span>
+          <p>
+            "Read our <a href="#content">methodology</a> before starting." The
+            link is 19 pixels tall because the paragraph is.
+            <strong>Inline.</strong>
+          </p>
+        </div>
+
+        <div class="verdict">
+          <span class="badge badge--fail">Fails</span>
+          <p>
+            A vertical list of 19-pixel-tall links with no vertical padding, each
+            8 pixels from the next. Not a sentence, and the circles intersect.
+          </p>
+        </div>
+
+        <div class="verdict">
+          <span class="badge badge--pass">Passes</span>
+          <p>
+            A 14×14 close button on a toast, where the toast also has a full-size
+            "Dismiss" button. <strong>Equivalent.</strong>
+          </p>
+        </div>
+
+        <h2>Why scanners get this wrong</h2>
+        <p>
+          Implementing the size check is trivial: read
+          <code>getBoundingClientRect()</code>, compare against 24. Implementing
+          the Spacing exception means measuring every other target on the page
+          and doing geometry. Plenty of tools skip it.
+        </p>
+        <p>
+          The result is not a slightly noisy report. It is a flood. When we first
+          ran our own checker against
+          <a href="https://www.gov.uk">gov.uk</a> — a site with a long public
+          record of taking accessibility seriously — it reported
+          <strong>72 violations</strong>, nearly all of them target size. Every
+          one was ours, not theirs. With the Spacing exception implemented, the
+          same page reports <strong>zero</strong>.
+        </p>
+        <div class="note">
+          <p>
+            <strong>If a tool tells you that gov.uk fails 72 times, the tool is
+            wrong.</strong> That is worth remembering generally: when an
+            automated report contradicts a site with genuine accessibility
+            expertise behind it, check the tool before you check the site.
+          </p>
+        </div>
+        <p>
+          Two smaller traps are worth knowing, because both produce confident
+          nonsense:
+        </p>
+        <ul>
+          <li>
+            <strong>Zero-area elements.</strong> A link inside a collapsed panel
+            can measure 320×0. It is not a target that is too small; it is not a
+            target at all. Reporting "320×0px, below the minimum" describes a
+            box, not a hit area.
+          </li>
+          <li>
+            <strong>Wrapper elements.</strong> A block-level link whose own box
+            has no height still receives clicks on the image inside it. The
+            hittable region is the union of the element and its rendered
+            descendants, not the element alone.
+          </li>
+        </ul>
+
+        <h2>How to check your own pages</h2>
+        <ol>
+          <li>
+            Find the small targets first. In DevTools, hovering an element shows
+            its box dimensions; anything under 24 in either direction is a
+            candidate.
+          </li>
+          <li>
+            For each candidate, ask the questions in order: is it in a sentence?
+            Is there an equivalent full-size control? Is it unstyled browser
+            furniture? If not, measure the gap to its nearest neighbour.
+          </li>
+          <li>
+            Test with a pointer, not a mouse pointer. Use a touchscreen, or
+            enable touch emulation, and try to hit each control quickly without
+            looking directly at it.
+          </li>
+        </ol>
+        <p>
+          <a href="/">A11yScope</a> implements 2.5.8 with the Spacing and Inline
+          exceptions, and reports cases it cannot decide — an off-screen control
+          measured while hidden, for instance — as needing review rather than
+          failing them.
+        </p>
+
+        <h2>2.5.8 and 2.5.5 are different criteria</h2>
+        <table>
+          <caption>The two target size criteria, side by side</caption>
+          <thead>
+            <tr><th scope="col">Criterion</th><th scope="col">Level</th><th scope="col">Size</th><th scope="col">Exceptions</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2.5.8 Target Size (Minimum)</td>
+              <td>AA</td>
+              <td>24 × 24</td>
+              <td>Spacing, Equivalent, Inline, User agent control, Essential</td>
+            </tr>
+            <tr>
+              <td>2.5.5 Target Size (Enhanced)</td>
+              <td>AAA</td>
+              <td>44 × 44</td>
+              <td>Fewer — no spacing exception</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          If someone tells you targets must be 44 pixels to conform, they are
+          quoting the AAA criterion. For AA — which is what the European
+          Accessibility Act and most procurement requirements point at — the
+          number is 24, and the exceptions are real.
+        </p>
+
+        <h2>Sources</h2>
+        <ul>
+          <li>
+            <a href="https://www.w3.org/TR/WCAG22/#target-size-minimum">WCAG 2.2, Success Criterion 2.5.8 Target Size (Minimum)</a>
+          </li>
+          <li>
+            <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html">Understanding SC 2.5.8, W3C Web Accessibility Initiative</a>
+          </li>
+        </ul>
+      </main>
+
+      <footer>
+        <p>
+          Written by Perceivable, who build
+          <a href="/">A11yScope</a>. Corrections welcome:
+          <a href="mailto:perceivablehq@gmail.com">perceivablehq@gmail.com</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

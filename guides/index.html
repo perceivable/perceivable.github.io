@@ -1,0 +1,134 @@
+<!doctype html>
+<!-- Index for the reference articles. Kept deliberately short: it exists so the
+     guides are findable and linked, not to be read. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Accessibility guides — A11yScope</title>
+    <meta
+      name="description"
+      content="Practical references on WCAG 2.2 and the European Accessibility Act, written from implementing the checks rather than summarising the spec."
+    />
+    <link rel="canonical" href="https://perceivable.github.io/guides/" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --bg-soft: #f5f7fa;
+        --text: #16181c;
+        --muted: #4b5158;
+        --accent: #12489e;
+        --rule: #dde1e6;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14161a;
+          --bg-soft: #1c1f25;
+          --text: #edeff2;
+          --muted: #a9b1bb;
+          --accent: #8ab4ff;
+          --rule: #2b3038;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--bg); color: var(--text);
+        font: 17px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .skip {
+        position: absolute; left: -9999px;
+        display: inline-block; min-height: 24px; padding: 8px 14px;
+        background: var(--bg); border: 2px solid var(--accent); border-radius: 6px;
+      }
+      .skip:focus { left: 12px; top: 12px; z-index: 10; }
+      .wrap { max-width: 44rem; margin: 0 auto; padding: 0 20px; }
+      header { border-bottom: 1px solid var(--rule); }
+      .bar {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 16px 0; flex-wrap: wrap; font-size: 16px;
+      }
+      .brand { font-weight: 700; }
+      nav a { display: inline-block; min-height: 24px; padding: 4px 8px; color: var(--accent); }
+      h1 { font-size: clamp(1.8rem, 4.5vw, 2.3rem); margin: 44px 0 12px; letter-spacing: -0.025em; }
+      .standfirst { font-size: 1.1rem; color: var(--muted); margin: 0 0 36px; }
+      a { color: var(--accent); }
+      a:focus-visible, .skip:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+      ul.guides { list-style: none; padding: 0; margin: 0; }
+      .guide {
+        border: 1px solid var(--rule); border-radius: 10px;
+        background: var(--bg-soft); padding: 20px 22px; margin: 0 0 14px;
+      }
+      .guide h2 { font-size: 1.15rem; margin: 0 0 6px; }
+      .guide h2 a { text-decoration: none; }
+      .guide h2 a:hover { text-decoration: underline; }
+      .guide p { margin: 0 0 8px; color: var(--muted); font-size: 0.98rem; }
+      .guide .tag { font-size: 0.84rem; color: var(--muted); }
+      footer {
+        border-top: 1px solid var(--rule); margin-top: 52px;
+        padding: 24px 0 48px; color: var(--muted); font-size: 0.94rem;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to main content</a>
+
+    <header>
+      <div class="wrap bar">
+        <span class="brand">A11yScope</span>
+        <nav aria-label="Primary">
+          <a href="/">Home</a>
+          <a href="/guides/">Guides</a>
+          <a href="/support/">Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <main id="content">
+        <h1>Guides</h1>
+        <p class="standfirst">
+          References written from implementing the checks, not from summarising
+          the spec. Where we got something wrong first and had to fix it, that
+          is in here too — those are usually the useful parts.
+        </p>
+
+        <ul class="guides">
+          <li class="guide">
+            <h2>
+              <a href="/guides/eaa-compliance/">The European Accessibility Act: what it requires, who is exempt, and which WCAG version actually counts</a>
+            </h2>
+            <p>
+              In force since June 2025. What it covers, how narrow the
+              microenterprise exemption really is, and why the legal reference
+              is still WCAG 2.1 even though EN 301 549 v4.1.1 adopted WCAG 2.2
+              in September 2026 — a distinction most write-ups miss.
+            </p>
+            <p class="tag">EAA · EN 301 549 · Last reviewed 24 September 2026</p>
+          </li>
+          <li class="guide">
+            <h2>
+              <a href="/guides/wcag-target-size/">WCAG 2.5.8 Target Size, including the exceptions everyone skips</a>
+            </h2>
+            <p>
+              What the criterion actually requires, all five exceptions with
+              worked examples, and why the Spacing exception decides whether
+              your site passes. Includes the case where our own checker reported
+              72 failures on gov.uk and every one was ours.
+            </p>
+            <p class="tag">WCAG 2.2 · Level AA · Last reviewed 24 September 2026</p>
+          </li>
+        </ul>
+      </main>
+
+      <footer>
+        <p>
+          Written by Perceivable, who build <a href="/">A11yScope</a>.
+          Corrections welcome:
+          <a href="mailto:perceivablehq@gmail.com">perceivablehq@gmail.com</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

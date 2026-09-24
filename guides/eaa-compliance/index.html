@@ -1,0 +1,413 @@
+<!doctype html>
+<!-- Reference article on the European Accessibility Act. The value here is
+     precision on two things most write-ups get wrong: which version of
+     EN 301 549 is actually the legal reference right now, and how narrow the
+     microenterprise exemption really is. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>European Accessibility Act: what it requires, who is exempt, and which WCAG version counts</title>
+    <meta
+      name="description"
+      content="The EAA has been in force since June 2025. What it covers, how narrow the microenterprise exemption is, why the legal reference is still WCAG 2.1 despite EN 301 549 v4.1.1, and what an automated scan can and cannot tell you."
+    />
+    <link rel="canonical" href="https://perceivable.github.io/guides/eaa-compliance/" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --bg-soft: #f5f7fa;
+        --text: #16181c;
+        --muted: #4b5158;
+        --accent: #12489e;
+        --rule: #dde1e6;
+        --flag: #8d6708;
+        --flag-bg: #fdf5e2;
+        --bad: #b3261e;
+        --bad-bg: #fdecea;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14161a;
+          --bg-soft: #1c1f25;
+          --text: #edeff2;
+          --muted: #a9b1bb;
+          --accent: #8ab4ff;
+          --rule: #2b3038;
+          --flag: #ffd166;
+          --flag-bg: #332b14;
+          --bad: #ff8a80;
+          --bad-bg: #38201f;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--bg); color: var(--text);
+        font: 17px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .skip {
+        position: absolute; left: -9999px;
+        display: inline-block; min-height: 24px; padding: 8px 14px;
+        background: var(--bg); border: 2px solid var(--accent); border-radius: 6px;
+      }
+      .skip:focus { left: 12px; top: 12px; z-index: 10; }
+      .wrap { max-width: 44rem; margin: 0 auto; padding: 0 20px; }
+      header { border-bottom: 1px solid var(--rule); }
+      .bar {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 16px 0; flex-wrap: wrap; font-size: 16px;
+      }
+      .brand { font-weight: 700; }
+      nav a { display: inline-block; min-height: 24px; padding: 4px 8px; color: var(--accent); }
+      h1 {
+        font-size: clamp(1.8rem, 4.5vw, 2.35rem);
+        line-height: 1.2; letter-spacing: -0.025em; margin: 44px 0 12px;
+      }
+      h2 { font-size: 1.35rem; margin: 46px 0 12px; letter-spacing: -0.01em; }
+      h3 { font-size: 1.08rem; margin: 28px 0 6px; }
+      p, li { margin: 0 0 14px; }
+      ul, ol { padding-left: 1.35rem; }
+      a { color: var(--accent); }
+      a:focus-visible, .skip:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+      .standfirst { font-size: 1.12rem; color: var(--muted); margin-bottom: 8px; }
+      .meta { color: var(--muted); font-size: 0.92rem; margin-bottom: 32px; }
+      .note {
+        background: var(--flag-bg); border-left: 4px solid var(--flag);
+        border-radius: 0 8px 8px 0; padding: 14px 20px; margin: 24px 0; font-size: 1rem;
+      }
+      .note p:last-child { margin-bottom: 0; }
+      .warn {
+        background: var(--bad-bg); border-left: 4px solid var(--bad);
+        border-radius: 0 8px 8px 0; padding: 14px 20px; margin: 24px 0; font-size: 1rem;
+      }
+      .warn p:last-child { margin-bottom: 0; }
+      table { border-collapse: collapse; width: 100%; font-size: 0.96rem; margin: 0 0 18px; }
+      th, td { border: 1px solid var(--rule); padding: 8px 12px; text-align: left; vertical-align: top; }
+      th { background: var(--bg-soft); font-weight: 650; }
+      caption { text-align: left; color: var(--muted); font-size: 0.92rem; padding-bottom: 8px; }
+      code {
+        font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+        font-size: 0.9em; background: var(--bg-soft); padding: 1px 5px; border-radius: 4px;
+      }
+      .checklist { list-style: none; padding: 0; }
+      .checklist li {
+        border: 1px solid var(--rule); border-radius: 8px; background: var(--bg-soft);
+        padding: 14px 18px; margin: 0 0 10px;
+      }
+      .checklist strong { display: block; margin-bottom: 4px; }
+      .checklist p { margin: 0; color: var(--muted); font-size: 0.97rem; }
+      footer {
+        border-top: 1px solid var(--rule); margin-top: 56px;
+        padding: 24px 0 48px; color: var(--muted); font-size: 0.94rem;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to main content</a>
+
+    <header>
+      <div class="wrap bar">
+        <span class="brand">A11yScope</span>
+        <nav aria-label="Primary">
+          <a href="/">Home</a>
+          <a href="/guides/">Guides</a>
+          <a href="/support/">Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <main id="content">
+        <h1>The European Accessibility Act: what it requires, who is exempt, and which WCAG version actually counts</h1>
+        <p class="standfirst">
+          In force since June 2025, enforced by 27 separate national
+          authorities, and misreported almost everywhere on the question of
+          which standard applies today.
+        </p>
+        <p class="meta">Last reviewed 24 September 2026</p>
+
+        <div class="warn">
+          <p>
+            <strong>This is a technical summary, not legal advice.</strong>
+            The EAA is a directive: each member state has written its own law
+            implementing it, and penalties, enforcement bodies and procedures
+            differ by country. If you need to know your exposure, ask a lawyer
+            in the relevant jurisdiction.
+          </p>
+        </div>
+
+        <h2>The short version</h2>
+        <ul>
+          <li>
+            Applies since <strong>28 June 2025</strong>. All 27 member states
+            have transposed it into national law.
+          </li>
+          <li>
+            Covers businesses offering certain products and services to EU
+            consumers — <strong>including businesses headquartered outside the
+            EU</strong>.
+          </li>
+          <li>
+            For websites and apps, compliance runs through
+            <strong>EN 301 549</strong>, which points at WCAG.
+          </li>
+          <li>
+            The microenterprise exemption is real but narrow, and applies to
+            <strong>services only</strong>.
+          </li>
+          <li>
+            Penalties are set nationally. Reported figures in national
+            implementations reach up to <strong>€100,000</strong> or a
+            percentage of annual turnover, depending on the country.
+          </li>
+        </ul>
+
+        <h2>Who it covers</h2>
+        <p>
+          The EAA does not cover every website. It covers specified products and
+          services:
+        </p>
+        <ul>
+          <li>E-commerce</li>
+          <li>Banking and consumer financial services</li>
+          <li>Passenger transport — air, bus, rail, waterborne</li>
+          <li>Telecommunications services</li>
+          <li>Audiovisual media services and streaming</li>
+          <li>E-books and dedicated reading software</li>
+          <li>
+            Hardware with user interfaces: computers, operating systems,
+            smartphones, ATMs, ticketing and check-in machines, TV equipment
+          </li>
+        </ul>
+        <p>
+          The trigger is offering these to consumers in the EU. A Korean or
+          American company selling to EU consumers is in scope; being outside
+          the EU is not an exemption.
+        </p>
+
+        <h2>Which standard applies — and this is where most write-ups are wrong</h2>
+        <p>
+          The EAA itself does not name WCAG. It sets functional accessibility
+          requirements, and conformance with a <em>harmonised standard</em>
+          cited in the Official Journal gives a <strong>presumption of
+          conformity</strong>. For digital products and services, that standard
+          is <strong>EN 301 549</strong>.
+        </p>
+
+        <div class="note">
+          <p>
+            <strong>Right now the legal reference is EN 301 549 v3.2.1 (2021),
+            which is based on WCAG 2.1 Level AA.</strong>
+          </p>
+          <p>
+            EN 301 549 <strong>v4.1.1</strong> was published in
+            <strong>September 2026</strong>. It adopts <strong>WCAG 2.2</strong>
+            as the benchmark for websites, software and digital documents,
+            adds six new requirements from WCAG 2.2, and drops the retired
+            4.1.1 Parsing criterion. But it has <em>not yet been cited in the
+            Official Journal</em>, so it does not yet carry the presumption of
+            conformity. Until the Commission cites it, v3.2.1 remains the
+            reference.
+          </p>
+        </div>
+
+        <p>
+          The practical consequence for anyone planning work now: build to
+          <strong>WCAG 2.2 AA</strong>. It is a superset of 2.1 AA, so you
+          satisfy today's legal reference and tomorrow's at the same time, and
+          you avoid doing the work twice when v4.1.1 is cited.
+        </p>
+        <p>
+          The six additions in WCAG 2.2 AA are worth knowing by name, because
+          they are the gap between a site that was compliant in 2024 and one
+          that will be:
+        </p>
+        <table>
+          <caption>What WCAG 2.2 adds at Level A and AA</caption>
+          <thead>
+            <tr><th scope="col">Criterion</th><th scope="col">Level</th><th scope="col">In one line</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2.4.11 Focus Not Obscured (Minimum)</td><td>AA</td><td>Sticky headers must not hide the focused element</td></tr>
+            <tr><td>2.5.7 Dragging Movements</td><td>AA</td><td>Anything draggable needs a single-pointer alternative</td></tr>
+            <tr><td>2.5.8 Target Size (Minimum)</td><td>AA</td><td>24×24 CSS pixels, with exceptions — <a href="/guides/wcag-target-size/">explained here</a></td></tr>
+            <tr><td>3.2.6 Consistent Help</td><td>A</td><td>Help mechanisms appear in the same relative order across pages</td></tr>
+            <tr><td>3.3.7 Redundant Entry</td><td>A</td><td>Do not make users re-enter information they already gave</td></tr>
+            <tr><td>3.3.8 Accessible Authentication (Minimum)</td><td>AA</td><td>No cognitive function test without an alternative — password managers must work</td></tr>
+          </tbody>
+        </table>
+
+        <h2>The exemptions, and how narrow they are</h2>
+
+        <h3>Microenterprises</h3>
+        <p>
+          A microenterprise is one with <strong>fewer than 10 employees
+          <em>and</em> annual turnover or balance sheet total not exceeding €2
+          million</strong>. Both conditions must hold. Exceed either and the
+          exemption is gone — immediately, with no grace period.
+        </p>
+        <p>
+          It also applies to <strong>services only, not products</strong>. A
+          six-person company running an online shop is exempt as a service
+          provider; a six-person company manufacturing e-readers is not.
+        </p>
+
+        <h3>Disproportionate burden</h3>
+        <p>
+          Article 14 allows you to claim that a specific requirement imposes a
+          disproportionate burden. It is not a way to opt out:
+        </p>
+        <ul>
+          <li>
+            It is <strong>per requirement</strong>, not blanket. You still
+            comply with everything that is not disproportionate.
+          </li>
+          <li>
+            You must <strong>document the assessment</strong> against the
+            criteria in Annex VI, and produce it to authorities on request.
+          </li>
+          <li>
+            It must be <strong>reassessed at least every five years</strong>.
+          </li>
+          <li>
+            Lack of priority, time or knowledge does not count. Cost is weighed
+            against benefit to people with disabilities, not against your
+            convenience.
+          </li>
+        </ul>
+
+        <h3>Legacy content</h3>
+        <p>
+          Content published before 28 June 2025 generally has until
+          <strong>28 June 2030</strong>. Anything published after June 2025
+          must comply from launch. Self-service terminals already in service
+          may continue to the end of their economic life.
+        </p>
+
+        <h2>A practical checklist</h2>
+        <p>
+          In the order that gets you the most reduction in risk per hour spent.
+        </p>
+        <ol class="checklist">
+          <li>
+            <strong>Confirm you are in scope</strong>
+            <p>
+              Which of your services fall in the listed categories, in which
+              member states, and are you above the microenterprise thresholds?
+              Write the answer down — you may have to show your reasoning.
+            </p>
+          </li>
+          <li>
+            <strong>Run an automated scan on your highest-traffic journeys</strong>
+            <p>
+              Home, search, product, cart, checkout, account. This finds roughly
+              a third of the problems in minutes and tells you how bad the
+              situation is. It does not tell you that you are compliant.
+            </p>
+          </li>
+          <li>
+            <strong>Fix contrast and form labels first</strong>
+            <p>
+              They are consistently the most common failures, they are cheap to
+              fix, and they block the most users. This is where automated
+              findings convert most directly into fixed barriers.
+            </p>
+          </li>
+          <li>
+            <strong>Test the checkout with a keyboard only</strong>
+            <p>
+              Unplug the mouse and complete a purchase. Anything that traps
+              focus or cannot be reached is a hard barrier no scanner reliably
+              catches.
+            </p>
+          </li>
+          <li>
+            <strong>Test with a screen reader</strong>
+            <p>
+              NVDA on Windows and VoiceOver on macOS are free. An hour here
+              finds problems that no tool will ever surface — alt text that is
+              accurate but useless, headings that lie about structure.
+            </p>
+          </li>
+          <li>
+            <strong>Publish an accessibility statement</strong>
+            <p>
+              Say what conforms, what does not, and how to report a problem.
+              Several member states expect one, and it is evidence of good
+              faith if anyone asks.
+            </p>
+          </li>
+          <li>
+            <strong>Put it in the build, not the audit</strong>
+            <p>
+              A scan in CI on every pull request costs almost nothing and stops
+              regressions. One annual audit finds the same problems repeatedly.
+            </p>
+          </li>
+        </ol>
+
+        <h2>What an automated scan can and cannot tell you</h2>
+        <p>
+          Automated testing detects roughly a third of accessibility barriers.
+          That proportion is worth internalising, because a great deal of
+          compliance marketing is built on blurring it.
+        </p>
+        <table>
+          <caption>Where the line falls</caption>
+          <thead>
+            <tr><th scope="col">A tool can decide</th><th scope="col">A person must decide</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Contrast ratios</td><td>Whether alt text describes the right thing</td></tr>
+            <tr><td>Missing labels and accessible names</td><td>Whether the reading order makes sense</td></tr>
+            <tr><td>Heading level jumps</td><td>Whether headings describe the content</td></tr>
+            <tr><td>Invalid ARIA roles and missing state</td><td>Whether a keyboard user can finish the task</td></tr>
+            <tr><td>Targets below 24×24 with no clearance</td><td>Whether an error message actually helps</td></tr>
+          </tbody>
+        </table>
+        <div class="warn">
+          <p>
+            <strong>No tool and no overlay can make you compliant, and any
+            vendor claiming otherwise is selling you liability.</strong>
+            Automated accessibility overlays in particular have been the subject
+            of repeated legal complaints. A scan is a starting point and a
+            regression guard, not a certificate.
+          </p>
+        </div>
+
+        <p>
+          <a href="/">A11yScope</a> is a free Chrome extension that runs the
+          automatable WCAG 2.2 AA checks on whatever page you are looking at,
+          and reports the cases it cannot decide as needing review rather than
+          guessing at them.
+        </p>
+
+        <h2>Sources</h2>
+        <ul>
+          <li>
+            <a href="https://accessible-eu-centre.ec.europa.eu/content-corner/news/european-accessibility-standard-en-301-549-has-been-updated-2026-09-07_en">EN 301 549 v4.1.1 update — AccessibleEU, European Commission</a>
+          </li>
+          <li>
+            <a href="https://www.etsi.org/deliver/etsi_en/301500_301599/301549/03.02.01_60/en_301549v030201p.pdf">EN 301 549 v3.2.1 (2021-03), ETSI — the currently cited version</a>
+          </li>
+          <li>
+            <a href="https://www.w3.org/TR/WCAG22/">WCAG 2.2, W3C Recommendation</a>
+          </li>
+          <li>
+            <a href="https://www.ccpc.ie/enforcement-and-regulation/market-surveillance/accessibility/accessibility-for-businesses/european-accessibility-act-guidelines-for-microenterprises">EAA guidelines for microenterprises — CCPC (Ireland)</a>
+          </li>
+        </ul>
+      </main>
+
+      <footer>
+        <p>
+          Written by Perceivable, who build
+          <a href="/">A11yScope</a>. Corrections welcome:
+          <a href="mailto:perceivablehq@gmail.com">perceivablehq@gmail.com</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
