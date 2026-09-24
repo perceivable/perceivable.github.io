@@ -1,0 +1,230 @@
+<!doctype html>
+<!-- Linked from the Chrome Web Store listing's support URL. Its most important
+     job is the false-positive report: a scanner that flags correct markup is
+     worse than no scanner, and users finding those for us is the cheapest
+     quality loop available. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Support — A11yScope</title>
+    <meta
+      name="description"
+      content="Help with A11yScope: how to run a scan, what the review items mean, and how to report a false positive."
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --bg-soft: #f5f7fa;
+        --text: #16181c;
+        --muted: #4b5158;
+        --accent: #12489e;
+        --rule: #dde1e6;
+        --flag: #8d6708;
+        --flag-bg: #fdf5e2;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14161a;
+          --bg-soft: #1c1f25;
+          --text: #edeff2;
+          --muted: #a9b1bb;
+          --accent: #8ab4ff;
+          --rule: #2b3038;
+          --flag: #ffd166;
+          --flag-bg: #332b14;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .skip {
+        position: absolute;
+        left: -9999px;
+        display: inline-block;
+        min-height: 24px;
+        padding: 8px 14px;
+        background: var(--bg);
+        border: 2px solid var(--accent);
+        border-radius: 6px;
+      }
+      .skip:focus { left: 12px; top: 12px; z-index: 10; }
+      .wrap { max-width: 44rem; margin: 0 auto; padding: 0 20px; }
+      header { border-bottom: 1px solid var(--rule); }
+      .bar {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 16px 0; flex-wrap: wrap;
+      }
+      .brand { font-weight: 700; font-size: 17px; }
+      nav a { display: inline-block; min-height: 24px; padding: 4px 8px; color: var(--accent); }
+      h1 { font-size: clamp(1.7rem, 4vw, 2.2rem); margin: 44px 0 10px; letter-spacing: -0.02em; }
+      h2 { font-size: 1.2rem; margin: 38px 0 10px; }
+      h3 { font-size: 1rem; margin: 22px 0 4px; }
+      p, li { margin: 0 0 12px; }
+      ul, ol { padding-left: 1.3rem; }
+      a { color: var(--accent); }
+      a:focus-visible, .skip:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+      .lede { color: var(--muted); margin-bottom: 8px; }
+      .callout {
+        background: var(--flag-bg);
+        border-left: 4px solid var(--flag);
+        border-radius: 0 10px 10px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+      }
+      .callout p:last-child { margin-bottom: 0; }
+      .card {
+        background: var(--bg-soft);
+        border: 1px solid var(--rule);
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin: 0 0 14px;
+      }
+      code {
+        font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+        font-size: 0.92em;
+        background: var(--bg-soft);
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+      footer {
+        border-top: 1px solid var(--rule);
+        margin-top: 52px;
+        padding: 24px 0 48px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to main content</a>
+
+    <header>
+      <div class="wrap bar">
+        <span class="brand">A11yScope</span>
+        <nav aria-label="Primary">
+          <a href="/">Home</a>
+          <a href="/support/">Support</a>
+          <a href="/privacy/">Privacy</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <main id="content">
+        <h1>Support</h1>
+        <p class="lede">
+          Questions, problems and — most usefully — false positives.
+        </p>
+
+        <div class="callout">
+          <p>
+            <strong>Found a finding that is wrong? Please tell us.</strong>
+            A scanner that flags correct markup is worse than no scanner, and a
+            report of that kind is the most valuable thing you can send. Every
+            one we receive gets a regression test so it cannot come back.
+          </p>
+          <p>
+            Email <a href="mailto:perceivablehq@gmail.com">perceivablehq@gmail.com</a>
+            with the page URL and the finding text. A screenshot helps.
+          </p>
+        </div>
+
+        <h2>Getting started</h2>
+        <ol>
+          <li>Open the page you want to check.</li>
+          <li>Click the A11yScope icon in the toolbar. The side panel opens.</li>
+          <li>Choose <strong>Scan this page</strong>.</li>
+          <li>Select any finding to highlight that element on the page.</li>
+        </ol>
+
+        <h2>Common questions</h2>
+
+        <div class="card">
+          <h3>Why does it say "needs review" instead of pass or fail?</h3>
+          <p>
+            Because the answer genuinely cannot be determined automatically.
+            Contrast over a background image, a control hidden off-screen until
+            focused, a video whose captions live in the player — each is a real
+            question for a person, not a false alarm to dismiss. Guessing would
+            be worse than saying so.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Does a clean scan mean my site is compliant?</h3>
+          <p>
+            No, and no tool can tell you that. Automated checks cover roughly a
+            third of accessibility barriers. Whether your alt text is accurate,
+            whether the page makes sense read aloud, whether a keyboard user can
+            finish a task — those need manual testing. A clean scan is a good
+            sign, not a certificate.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>It says "this page cannot be scanned".</h3>
+          <p>
+            Browser pages (<code>chrome://</code>), the Chrome Web Store and
+            other extensions' pages are blocked to extensions for security
+            reasons. Open an ordinary web page and scan again.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Does it scan content inside iframes?</h3>
+          <p>
+            Not yet — only the top frame. Embedded content has to be opened
+            directly and scanned on its own.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Does it work on pages behind a login?</h3>
+          <p>
+            Yes. It reads the page as rendered in your browser, so anything you
+            can see, it can check. Nothing is uploaded — see the
+            <a href="/privacy/">privacy policy</a>.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Why did it flag something my other tool passed?</h3>
+          <p>
+            Tools implement different subsets of WCAG and make different calls
+            on the exceptions. A11yScope implements the WCAG 2.2 target size
+            criterion (2.5.8) including its spacing and in-sentence exceptions,
+            which many tools skip entirely. If you think a finding is wrong,
+            send it over — that is exactly the report we want.
+          </p>
+        </div>
+
+        <h2>Feature requests</h2>
+        <p>
+          Send them to the same address. Particularly useful: which checks you
+          expected to see and did not, and what you currently do by hand that a
+          tool could do for you.
+        </p>
+
+        <h2>Response time</h2>
+        <p>
+          A11yScope is maintained by one person alongside other work. Expect a
+          reply within a few days. False-positive reports are handled first.
+        </p>
+      </main>
+
+      <footer>
+        <p>
+          A11yScope is made by Perceivable.
+          <a href="mailto:perceivablehq@gmail.com">perceivablehq@gmail.com</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
