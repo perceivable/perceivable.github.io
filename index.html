@@ -92,7 +92,15 @@
         text-decoration: none;
       }
       .cta:hover { filter: brightness(1.08); }
-      .cta-note { color: var(--muted); font-size: 0.9rem; margin: 12px 0 0; }
+      .cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+      /* The secondary action reads as a choice, not a second button. */
+      .cta--quiet {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid var(--rule);
+      }
+      .cta--quiet:hover { background: var(--bg-soft); filter: none; }
+      .cta-note { color: var(--muted); font-size: 0.9rem; margin: 14px 0 0; max-width: 34rem; }
 
       h2 { font-size: 1.3rem; margin: 48px 0 12px; letter-spacing: -0.01em; }
       h3 { font-size: 1rem; margin: 0 0 6px; }
@@ -154,6 +162,7 @@
           <a href="/guides/">Guides</a>
           <a href="/support/">Support</a>
           <a href="/privacy/">Privacy</a>
+          <a href="https://chromewebstore.google.com/detail/ldbmeaihgdlghenedbhafkfikefnmicb">Install</a>
         </nav>
       </div>
     </header>
@@ -168,9 +177,15 @@
             success criterion it comes from, and highlights the element on the
             page.
           </p>
-          <a class="cta" href="#checks">See what it checks</a>
+          <div class="cta-row">
+            <a class="cta" href="https://chromewebstore.google.com/detail/ldbmeaihgdlghenedbhafkfikefnmicb">Add to Chrome — free</a>
+            <a class="cta cta--quiet" href="#checks">See what it checks</a>
+          </div>
           <p class="cta-note">
-            Free. No account, no sign-in, and nothing is uploaded.
+            No account, no sign-in, nothing uploaded — and you do not have to
+            take that on trust:
+            <a href="https://github.com/perceivable/a11yscope">the source is public</a>.
+            There is not a single network call in it.
           </p>
         </section>
 
@@ -238,7 +253,10 @@
           <dd>
             Nowhere. Scans run inside your browser and results exist only in the
             side panel until you close it. See the
-            <a href="/privacy/">privacy policy</a>.
+            <a href="/privacy/">privacy policy</a> — or check it yourself:
+            <a href="https://github.com/perceivable/a11yscope">the source is public</a>,
+            and there is a test in it that fails the build if anyone ever adds a
+            network call.
           </dd>
 
           <dt>What permissions does it need?</dt>
