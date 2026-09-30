@@ -1,0 +1,426 @@
+<!doctype html>
+<!-- Reference article plus a working contrast calculator. The calculator is
+     what people search for; the article is what they need once they have a
+     number, because most wrong contrast answers come from measuring against
+     the wrong background, not from the formula. Client-side only. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WCAG color contrast checker — and why your contrast result is often wrong</title>
+    <meta
+      name="description"
+      content="Check a WCAG 2.2 contrast ratio in your browser, then learn the four ways contrast gets measured wrongly: translucent backgrounds, gradients, text that is never painted, and placeholders."
+    />
+    <link rel="canonical" href="https://perceivable.github.io/guides/color-contrast/" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --bg-soft: #f5f7fa;
+        --text: #16181c;
+        --muted: #4b5158;
+        --accent: #12489e;
+        --accent-ink: #ffffff;
+        --rule: #dde1e6;
+        --ok: #1b6b3a;
+        --ok-bg: #e8f5ec;
+        --bad: #b3261e;
+        --bad-bg: #fdecea;
+        --flag: #8d6708;
+        --flag-bg: #fdf5e2;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14161a;
+          --bg-soft: #1c1f25;
+          --text: #edeff2;
+          --muted: #a9b1bb;
+          --accent: #8ab4ff;
+          --accent-ink: #10131a;
+          --rule: #2b3038;
+          --ok: #7ee2a8;
+          --ok-bg: #16301f;
+          --bad: #ff8a80;
+          --bad-bg: #38201f;
+          --flag: #ffd166;
+          --flag-bg: #332b14;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--bg); color: var(--text);
+        font: 17px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .skip {
+        position: absolute; left: -9999px;
+        display: inline-block; min-height: 24px; padding: 8px 14px;
+        background: var(--bg); border: 2px solid var(--accent); border-radius: 6px;
+      }
+      .skip:focus { left: 12px; top: 12px; z-index: 10; }
+      .wrap { max-width: 44rem; margin: 0 auto; padding: 0 20px; }
+      header { border-bottom: 1px solid var(--rule); }
+      .bar {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 16px 0; flex-wrap: wrap; font-size: 16px;
+      }
+      .brand { font-weight: 700; }
+      nav a { display: inline-block; min-height: 24px; padding: 4px 8px; color: var(--accent); }
+      h1 {
+        font-size: clamp(1.8rem, 4.5vw, 2.35rem);
+        line-height: 1.2; letter-spacing: -0.025em; margin: 44px 0 12px;
+      }
+      h2 { font-size: 1.35rem; margin: 46px 0 12px; letter-spacing: -0.01em; }
+      h3 { font-size: 1.08rem; margin: 28px 0 6px; }
+      p, li { margin: 0 0 14px; }
+      ul, ol { padding-left: 1.35rem; }
+      a { color: var(--accent); }
+      a:focus-visible, .skip:focus-visible, input:focus-visible, button:focus-visible {
+        outline: 3px solid var(--accent); outline-offset: 3px;
+      }
+      .standfirst { font-size: 1.12rem; color: var(--muted); margin-bottom: 8px; }
+      .meta { color: var(--muted); font-size: 0.92rem; margin-bottom: 28px; }
+      .note {
+        background: var(--flag-bg); border-left: 4px solid var(--flag);
+        border-radius: 0 8px 8px 0; padding: 14px 20px; margin: 24px 0; font-size: 1rem;
+      }
+      .note p:last-child { margin-bottom: 0; }
+      table { border-collapse: collapse; width: 100%; font-size: 0.96rem; margin: 0 0 18px; }
+      th, td { border: 1px solid var(--rule); padding: 8px 12px; text-align: left; vertical-align: top; }
+      th { background: var(--bg-soft); font-weight: 650; }
+      caption { text-align: left; color: var(--muted); font-size: 0.92rem; padding-bottom: 8px; }
+      code {
+        font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+        font-size: 0.9em; background: var(--bg-soft); padding: 1px 5px; border-radius: 4px;
+      }
+      pre {
+        background: var(--bg-soft); border: 1px solid var(--rule); border-radius: 8px;
+        padding: 14px 16px; overflow-x: auto; font-size: 0.88rem; line-height: 1.55;
+      }
+      pre code { background: none; padding: 0; }
+
+      /* ── calculator ── */
+      .calc {
+        border: 1px solid var(--rule); border-radius: 12px; background: var(--bg-soft);
+        padding: 20px; margin: 8px 0 12px;
+      }
+      .pickers { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 14px; }
+      .picker label { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+      .picker-row { display: flex; gap: 8px; align-items: center; }
+      .picker input[type="color"] {
+        width: 48px; height: 44px; padding: 2px; border: 1px solid var(--muted);
+        border-radius: 8px; background: var(--bg); cursor: pointer;
+      }
+      .picker input[type="text"] {
+        flex: 1; min-height: 44px; font: inherit; font-family: ui-monospace, Menlo, Consolas, monospace;
+        padding: 8px 10px; border: 1px solid var(--muted); border-radius: 8px;
+        background: var(--bg); color: var(--text);
+      }
+      .swap {
+        margin-top: 12px; min-height: 40px; padding: 8px 14px; font: inherit; font-size: 0.92rem;
+        border: 1px solid var(--muted); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer;
+      }
+      .sample {
+        margin: 16px 0 12px; border-radius: 10px; padding: 18px 20px;
+        border: 1px solid var(--rule);
+      }
+      .sample .big { font-size: 24px; font-weight: 400; margin: 0 0 6px; }
+      .sample .small { font-size: 16px; margin: 0; }
+      .ratio {
+        font-family: ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums;
+        font-size: 2rem; font-weight: 700; margin: 4px 0 10px;
+      }
+      .verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+      .verdicts li {
+        border-radius: 8px; padding: 8px 10px; font-size: 0.9rem; margin: 0;
+        border: 1px solid var(--rule); background: var(--bg);
+      }
+      .verdicts strong { display: block; font-size: 0.95rem; }
+      .pass { color: var(--ok); }
+      .fail { color: var(--bad); }
+      .err { color: var(--bad); font-size: 0.92rem; min-height: 1.4em; margin: 6px 0 0; }
+
+      footer {
+        border-top: 1px solid var(--rule); margin-top: 56px;
+        padding: 24px 0 48px; color: var(--muted); font-size: 0.94rem;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to main content</a>
+
+    <header>
+      <div class="wrap bar">
+        <span class="brand">A11yScope</span>
+        <nav aria-label="Primary">
+          <a href="/">Home</a>
+          <a href="/guides/">Guides</a>
+          <a href="/support/">Support</a>
+          <a href="https://chromewebstore.google.com/detail/ldbmeaihgdlghenedbhafkfikefnmicb">Install</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <main id="content">
+        <h1>WCAG color contrast checker — and why your result is often wrong</h1>
+        <p class="standfirst">
+          The formula is the easy part. Most wrong contrast answers come from
+          measuring against the wrong background.
+        </p>
+        <p class="meta">Last reviewed 30 September 2026 · WCAG 2.2 · Runs entirely in your browser</p>
+
+        <h2 id="checker">Check a pair of colors</h2>
+        <section class="calc" aria-labelledby="checker">
+          <div class="pickers">
+            <div class="picker">
+              <label for="fg-text">Text color</label>
+              <div class="picker-row">
+                <input type="color" id="fg-pick" value="#595959" aria-label="Pick text color" />
+                <input type="text" id="fg-text" value="#595959" spellcheck="false" autocomplete="off" />
+              </div>
+            </div>
+            <div class="picker">
+              <label for="bg-text">Background color</label>
+              <div class="picker-row">
+                <input type="color" id="bg-pick" value="#ffffff" aria-label="Pick background color" />
+                <input type="text" id="bg-text" value="#ffffff" spellcheck="false" autocomplete="off" />
+              </div>
+            </div>
+          </div>
+          <button type="button" class="swap" id="swap">Swap colors</button>
+
+          <div class="sample" id="sample" aria-hidden="true">
+            <p class="big">Large text sample, 24px</p>
+            <p class="small">Normal text sample at 16px — the size most body copy uses.</p>
+          </div>
+
+          <p class="ratio" id="ratio" aria-live="polite">7.00:1</p>
+          <ul class="verdicts" id="verdicts"></ul>
+          <p class="err" id="err" role="status"></p>
+        </section>
+        <p style="font-size:0.94rem;color:var(--muted)">
+          Accepts <code>#rgb</code>, <code>#rrggbb</code> and <code>rgb(…)</code>.
+          Colors are treated as opaque — if yours has transparency, read
+          <a href="#translucent">the first trap</a> below before trusting the number.
+        </p>
+
+        <h2>What WCAG requires</h2>
+        <table>
+          <caption>Contrast requirements in WCAG 2.2</caption>
+          <thead>
+            <tr><th scope="col">Criterion</th><th scope="col">Level</th><th scope="col">Normal text</th><th scope="col">Large text</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1.4.3 Contrast (Minimum)</td><td>AA</td><td>4.5:1</td><td>3:1</td></tr>
+            <tr><td>1.4.6 Contrast (Enhanced)</td><td>AAA</td><td>7:1</td><td>4.5:1</td></tr>
+            <tr><td>1.4.11 Non-text Contrast</td><td>AA</td><td colspan="2">3:1 for UI components and meaningful graphics</td></tr>
+          </tbody>
+        </table>
+        <p>
+          <strong>Large text</strong> means at least 18 point (24 CSS pixels), or
+          at least 14 point bold (about 18.66 CSS pixels at weight 700). Below
+          that, it is normal text and needs 4.5:1 at AA.
+        </p>
+        <p>
+          The ratio itself comes from relative luminance:
+          <code>(L1 + 0.05) / (L2 + 0.05)</code>, lighter over darker. It runs
+          from 1:1 (identical) to 21:1 (black on white).
+        </p>
+
+        <h2>Four ways contrast gets measured wrongly</h2>
+        <p>
+          We learned each of these by getting it wrong in our own checker and
+          noticing only because it flagged sites whose accessibility we had
+          every reason to trust.
+        </p>
+
+        <h3 id="translucent">1. Translucent backgrounds, read one layer deep</h3>
+        <p>
+          <code>getComputedStyle(el).backgroundColor</code> on most text elements
+          returns <code>rgba(0, 0, 0, 0)</code> — transparent. The color you see
+          comes from an ancestor, and often from several stacked translucent
+          layers. A card at <code>rgba(255,255,255,0.8)</code> over a dark hero is
+          not white.
+        </p>
+        <p>
+          The correct approach is to walk up the ancestors, collect every layer
+          until one is opaque, and alpha-composite them from the bottom up. If
+          nothing opaque is found, the canvas behind it all is white by default.
+          Semi-transparent <em>text</em> needs the same treatment against the
+          result.
+        </p>
+
+        <h3>2. Gradients, either ignored or guessed</h3>
+        <p>
+          A gradient background has no single color, so many tools give up and
+          report "cannot measure" for every word on a gradient header. That is
+          honest but noisy.
+        </p>
+        <p>
+          There is a better answer that is still honest. The color stops are in
+          the computed value. <strong>If the text clears the requirement against
+          every stop, it clears it everywhere along the gradient</strong>,
+          whatever the geometry — that is a proof, not an estimate. Only when a
+          stop fails does it genuinely depend on where the text sits, and only
+          then does it need a person to look.
+        </p>
+
+        <h3>3. Text that is never painted</h3>
+        <p>
+          This is the standard way to give an icon button a screen reader label:
+        </p>
+        <pre><code>.icon-button {
+  text-indent: -5000px;
+  overflow: hidden;
+}</code></pre>
+        <p>
+          The text is in the DOM; its color has a contrast ratio; and it is
+          irrelevant, because nobody can see it. A checker that reads the
+          element's box will measure it anyway. Measuring the text node itself
+          with a <code>Range</code>, and checking that its rectangle survives
+          every clipping ancestor, avoids reporting a problem that does not
+          exist.
+        </p>
+        <p>
+          The mirror image deserves care too: near-white text computed against a
+          light background almost always means the real dark backdrop is a
+          positioned sibling or a <code>::before</code> — not an ancestor at all.
+          "1.1:1" there is a confident wrong answer. The honest one is "could not
+          see the background; check by eye".
+        </p>
+
+        <h3>4. Placeholders, skipped</h3>
+        <p>
+          Grey placeholder text is one of the most common real failures, and it
+          is often skipped on the assumption that its color cannot be read. In
+          Chrome it can: <code>getComputedStyle(input, "::placeholder")</code>
+          returns it, including the browser's own default when the page sets
+          none. Chrome's default placeholder grey clears 4.5:1 on white; the
+          custom lighter greys designers reach for usually do not.
+        </p>
+        <div class="note">
+          <p>
+            <strong>A placeholder is not a label either.</strong> It disappears
+            when the user starts typing. Passing contrast does not make a
+            placeholder-only field accessible — WCAG 1.3.1 and 4.1.2 still need a
+            real label.
+          </p>
+        </div>
+
+        <h2>Checking a whole page</h2>
+        <p>
+          A calculator answers one pair at a time. For every text element on a
+          page, <a href="/">A11yScope</a> — a free Chrome extension — composites
+          translucent layers, measures gradients stop by stop, skips text that
+          is never painted, and measures placeholders, then shows each failure
+          with its measured ratio and both colors. What it cannot determine, such
+          as text over a photograph, it reports for review rather than guessing.
+        </p>
+
+        <h2>Sources</h2>
+        <ul>
+          <li><a href="https://www.w3.org/TR/WCAG22/#contrast-minimum">WCAG 2.2, 1.4.3 Contrast (Minimum)</a></li>
+          <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html">Understanding SC 1.4.3, W3C WAI</a></li>
+          <li><a href="https://www.w3.org/TR/WCAG22/#dfn-relative-luminance">WCAG 2.2 definition of relative luminance</a></li>
+        </ul>
+      </main>
+
+      <footer>
+        <p>
+          Written by Perceivable, who build <a href="/">A11yScope</a>.
+          Corrections welcome:
+          <a href="mailto:perceivablehq@gmail.com">perceivablehq@gmail.com</a>
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      (() => {
+        const $ = (id) => document.getElementById(id);
+        const fgText = $("fg-text"), bgText = $("bg-text");
+        const fgPick = $("fg-pick"), bgPick = $("bg-pick");
+
+        function parse(value) {
+          const v = String(value).trim().toLowerCase();
+          let m = v.match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/);
+          if (m) {
+            let h = m[1];
+            if (h.length === 3) h = [...h].map((c) => c + c).join("");
+            return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+          }
+          m = v.match(/^rgba?\(\s*(\d{1,3})[\s,]+(\d{1,3})[\s,]+(\d{1,3})/);
+          if (m) {
+            const rgb = m.slice(1, 4).map(Number);
+            if (rgb.every((n) => n <= 255)) return rgb;
+          }
+          return null;
+        }
+
+        const hex = (rgb) => "#" + rgb.map((n) => n.toString(16).padStart(2, "0")).join("");
+
+        function luminance(rgb) {
+          const [r, g, b] = rgb.map((v) => {
+            const s = v / 255;
+            return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+          });
+          return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        }
+
+        function ratio(a, b) {
+          const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+          return (hi + 0.05) / (lo + 0.05);
+        }
+
+        const CHECKS = [
+          ["AA normal", 4.5], ["AA large", 3], ["AAA normal", 7], ["AAA large", 4.5], ["UI components", 3],
+        ];
+
+        function update() {
+          const fg = parse(fgText.value), bg = parse(bgText.value);
+          if (!fg || !bg) {
+            $("err").textContent = `Could not read the ${!fg ? "text" : "background"} color — use #rrggbb or rgb(r, g, b).`;
+            // Never leave the previous verdict on screen next to an input it
+            // does not describe: a stale "Pass" beside a typo is a wrong answer.
+            $("ratio").textContent = "—";
+            $("verdicts").replaceChildren();
+            return;
+          }
+          $("err").textContent = "";
+          fgPick.value = hex(fg); bgPick.value = hex(bg);
+          const sample = $("sample");
+          sample.style.color = hex(fg); sample.style.background = hex(bg);
+
+          // Truncate rather than round, so 4.499 never displays as a passing 4.50.
+          const r = Math.floor(ratio(fg, bg) * 100) / 100;
+          $("ratio").textContent = `${r.toFixed(2)}:1`;
+
+          const list = $("verdicts");
+          list.replaceChildren();
+          for (const [name, need] of CHECKS) {
+            const li = document.createElement("li");
+            const ok = r >= need;
+            const title = document.createElement("strong");
+            title.textContent = name;
+            const state = document.createElement("span");
+            state.className = ok ? "pass" : "fail";
+            state.textContent = `${ok ? "Pass" : "Fail"} · needs ${need}:1`;
+            li.append(title, state);
+            list.append(li);
+          }
+        }
+
+        fgText.addEventListener("input", update);
+        bgText.addEventListener("input", update);
+        fgPick.addEventListener("input", () => { fgText.value = fgPick.value; update(); });
+        bgPick.addEventListener("input", () => { bgText.value = bgPick.value; update(); });
+        $("swap").addEventListener("click", () => {
+          [fgText.value, bgText.value] = [bgText.value, fgText.value];
+          update();
+        });
+        update();
+      })();
+    </script>
+  </body>
+</html>
